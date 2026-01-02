@@ -184,13 +184,26 @@ export class SandboxManager {
     async loadAllEnvFiles() {
         const results = [];
         
-        // 加载顺序：bom -> dom -> webapi -> encoding -> timer -> ai-generated
-        const order = ['bom', 'dom', 'webapi', 'encoding', 'timer', 'ai-generated'];
+        // 加载顺序：core (监控系统) -> bom -> dom -> webapi -> encoding -> timer -> ai-generated
+        // core 必须首先加载，因为其他模块依赖监控系统
+        const order = ['core', 'bom', 'dom', 'webapi', 'encoding', 'timer', 'ai-generated'];
         
         for (const category of order) {
             const categoryPath = path.join(ENV_DIR, category);
             if (fs.existsSync(categoryPath)) {
-                const files = fs.readdirSync(categoryPath).filter(f => f.endsWith('.js'));
+                let files = fs.readdirSync(categoryPath).filter(f => f.endsWith('.js'));
+                
+                // core 目录：确保 MonitorSystem.js 首先加载
+                if (category === 'core') {
+                    // MonitorSystem 必须第一个加载
+                    const monitorFile = files.find(f => f === 'MonitorSystem.js');
+                    if (monitorFile) {
+                        const result = await this.loadEnvFile(path.join(category, monitorFile));
+                        results.push(result);
+                    }
+                    // 加载其他 core 文件（排除 _index.js 和已加载的 MonitorSystem.js）
+                    files = files.filter(f => f !== 'MonitorSystem.js' && f !== '_index.js');
+                }
                 
                 // ai-generated目录先加载_index.js
                 if (category === 'ai-generated') {
@@ -201,6 +214,9 @@ export class SandboxManager {
                     }
                     continue;
                 }
+                
+                // 其他目录正常加载（排除 _index.js）
+                files = files.filter(f => f !== '_index.js');
                 
                 for (const file of files) {
                     const result = await this.loadEnvFile(path.join(category, file));

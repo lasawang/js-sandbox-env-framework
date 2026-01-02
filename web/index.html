@@ -43,6 +43,14 @@
                     <i class="fas fa-list-alt"></i>
                     <span>日志查看</span>
                 </a>
+                <a href="#" class="nav-item" data-page="mock">
+                    <i class="fas fa-cogs"></i>
+                    <span>Mock配置</span>
+                </a>
+                <a href="#" class="nav-item" data-page="monitor">
+                    <i class="fas fa-chart-line"></i>
+                    <span>监控面板</span>
+                </a>
             </nav>
             <div class="sidebar-footer">
                 <div class="status-indicator">
@@ -287,6 +295,8 @@
                     <div class="log-tabs">
                         <button class="tab-btn active" data-log-tab="access">访问日志</button>
                         <button class="tab-btn" data-log-tab="undefined">Undefined</button>
+                        <button class="tab-btn" data-log-tab="calls">方法调用</button>
+                        <button class="tab-btn" data-log-tab="create">元素创建</button>
                         <button class="tab-btn" data-log-tab="ai">AI历史</button>
                     </div>
                     <div class="log-content active" id="log-access">
@@ -295,8 +305,166 @@
                     <div class="log-content" id="log-undefined">
                         <div id="undefined-log-list" class="log-list"></div>
                     </div>
+                    <div class="log-content" id="log-calls">
+                        <div id="calls-log-list" class="log-list"></div>
+                    </div>
+                    <div class="log-content" id="log-create">
+                        <div id="create-log-list" class="log-list"></div>
+                    </div>
                     <div class="log-content" id="log-ai">
                         <div id="ai-log-list" class="log-list"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Mock配置页面 -->
+            <section id="page-mock" class="page">
+                <header class="page-header">
+                    <h1><i class="fas fa-cogs"></i> Mock返回值配置</h1>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary" onclick="refreshMockList()">
+                            <i class="fas fa-sync"></i> 刷新
+                        </button>
+                        <button class="btn btn-primary" onclick="showAddMockModal()">
+                            <i class="fas fa-plus"></i> 添加Mock
+                        </button>
+                    </div>
+                </header>
+                <div class="page-content">
+                    <div class="mock-info">
+                        <div class="info-box">
+                            <i class="fas fa-info-circle"></i>
+                            <p>Mock配置允许你自定义方法的返回值，用于模拟特定的浏览器行为。例如：</p>
+                            <ul>
+                                <li><code>document.getElementById</code> - 返回自定义元素或null</li>
+                                <li><code>canvas.getContext</code> - 返回mock的canvas上下文</li>
+                                <li><code>window.confirm</code> - 控制确认对话框的返回值</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="mock-preset-section">
+                        <h3><i class="fas fa-magic"></i> 预设Mock模板</h3>
+                        <div class="preset-grid">
+                            <button class="preset-btn" onclick="applyPresetMock('anti-detect')">
+                                <i class="fas fa-user-secret"></i>
+                                <span>反检测模式</span>
+                                <small>隐藏自动化特征</small>
+                            </button>
+                            <button class="preset-btn" onclick="applyPresetMock('canvas-fp')">
+                                <i class="fas fa-fingerprint"></i>
+                                <span>Canvas指纹</span>
+                                <small>固定Canvas返回值</small>
+                            </button>
+                            <button class="preset-btn" onclick="applyPresetMock('webgl-fp')">
+                                <i class="fas fa-cube"></i>
+                                <span>WebGL指纹</span>
+                                <small>模拟WebGL参数</small>
+                            </button>
+                            <button class="preset-btn" onclick="applyPresetMock('audio-fp')">
+                                <i class="fas fa-volume-up"></i>
+                                <span>Audio指纹</span>
+                                <small>固定Audio上下文</small>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mock-list-section">
+                        <h3><i class="fas fa-list"></i> 当前Mock配置</h3>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>路径</th>
+                                    <th>返回类型</th>
+                                    <th>返回值预览</th>
+                                    <th>调用次数</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mock-table-body">
+                            </tbody>
+                        </table>
+                        <div class="empty-state" id="no-mocks">
+                            <i class="fas fa-cog"></i>
+                            <p>暂无Mock配置</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 监控面板页面 -->
+            <section id="page-monitor" class="page">
+                <header class="page-header">
+                    <h1><i class="fas fa-chart-line"></i> 实时监控面板</h1>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary" onclick="refreshMonitorStats()">
+                            <i class="fas fa-sync"></i> 刷新
+                        </button>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="auto-refresh-monitor" checked>
+                            自动刷新 (3s)
+                        </label>
+                    </div>
+                </header>
+                <div class="page-content">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-eye"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="stat-access">0</span>
+                                <span class="stat-label">属性访问</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-phone"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="stat-calls">0</span>
+                                <span class="stat-label">方法调用</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-plus-circle"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="stat-create">0</span>
+                                <span class="stat-label">元素创建</span>
+                            </div>
+                        </div>
+                        <div class="stat-card warning">
+                            <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="stat-undefined">0</span>
+                                <span class="stat-label">未定义属性</span>
+                            </div>
+                        </div>
+                        <div class="stat-card success">
+                            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="stat-fixed">0</span>
+                                <span class="stat-label">已修复</span>
+                            </div>
+                        </div>
+                        <div class="stat-card info">
+                            <div class="stat-icon"><i class="fas fa-cogs"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="stat-mocks">0</span>
+                                <span class="stat-label">活跃Mock</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="monitor-panels">
+                        <div class="monitor-panel">
+                            <h3><i class="fas fa-fire"></i> 热点方法调用 (Top 10)</h3>
+                            <div id="hot-methods-list" class="hot-list"></div>
+                        </div>
+                        <div class="monitor-panel">
+                            <h3><i class="fas fa-tags"></i> 创建的元素类型</h3>
+                            <div id="element-types-list" class="element-type-list"></div>
+                        </div>
+                    </div>
+
+                    <div class="call-chain-panel">
+                        <h3><i class="fas fa-stream"></i> 最近调用链</h3>
+                        <div id="call-chain-list" class="call-chain-list"></div>
                     </div>
                 </div>
             </section>

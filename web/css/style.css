@@ -863,3 +863,343 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--text-secondary);
 }
+
+/* ========== Mock配置页面 ========== */
+.mock-info {
+    margin-bottom: 24px;
+}
+
+.info-box {
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: var(--border-radius);
+    padding: 16px 20px;
+}
+
+.info-box i {
+    color: var(--info-color);
+    margin-right: 8px;
+}
+
+.info-box p {
+    margin-bottom: 12px;
+}
+
+.info-box ul {
+    margin-left: 28px;
+    color: var(--text-secondary);
+}
+
+.info-box code {
+    background: var(--bg-tertiary);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.mock-preset-section {
+    margin-bottom: 32px;
+}
+
+.mock-preset-section h3 {
+    margin-bottom: 16px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.mock-preset-section h3 i {
+    margin-right: 8px;
+    color: var(--warning-color);
+}
+
+.preset-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+.preset-btn {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 16px;
+    text-align: left;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.preset-btn:hover {
+    border-color: var(--primary-color);
+    background: var(--bg-tertiary);
+}
+
+.preset-btn i {
+    font-size: 24px;
+    color: var(--primary-color);
+}
+
+.preset-btn span {
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.preset-btn small {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.mock-list-section h3 {
+    margin-bottom: 16px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.mock-list-section h3 i {
+    margin-right: 8px;
+    color: var(--info-color);
+}
+
+.value-preview {
+    font-family: monospace;
+    font-size: 12px;
+    color: var(--text-secondary);
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+/* ========== 监控面板页面 ========== */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.stat-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.stat-card .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(79, 70, 229, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: var(--primary-color);
+}
+
+.stat-card.warning .stat-icon {
+    background: rgba(245, 158, 11, 0.2);
+    color: var(--warning-color);
+}
+
+.stat-card.success .stat-icon {
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--success-color);
+}
+
+.stat-card.info .stat-icon {
+    background: rgba(59, 130, 246, 0.2);
+    color: var(--info-color);
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.stat-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.monitor-panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.monitor-panel {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 20px;
+}
+
+.monitor-panel h3 {
+    margin-bottom: 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.monitor-panel h3 i {
+    margin-right: 8px;
+    color: var(--warning-color);
+}
+
+.hot-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.hot-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.hot-item .method {
+    width: 200px;
+    font-family: monospace;
+    font-size: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.hot-item .bar-container {
+    flex: 1;
+    height: 8px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.hot-item .bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--info-color));
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.hot-item .count {
+    width: 40px;
+    text-align: right;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.element-type-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.element-type-item {
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.element-type-item .tag {
+    font-family: monospace;
+    font-size: 12px;
+    color: var(--info-color);
+}
+
+.element-type-item .count {
+    font-size: 12px;
+    color: var(--text-secondary);
+    background: var(--bg-color);
+    padding: 2px 6px;
+    border-radius: 10px;
+}
+
+.call-chain-panel {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 20px;
+}
+
+.call-chain-panel h3 {
+    margin-bottom: 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.call-chain-panel h3 i {
+    margin-right: 8px;
+    color: var(--info-color);
+}
+
+.call-chain-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.chain-item {
+    background: var(--bg-tertiary);
+    border-radius: 6px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+}
+
+.chain-item .time {
+    color: var(--text-secondary);
+    font-size: 11px;
+    width: 70px;
+}
+
+.chain-item .chain {
+    font-family: monospace;
+    color: var(--info-color);
+    flex: 1;
+}
+
+.chain-item .args {
+    font-family: monospace;
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+.chain-item .result {
+    font-family: monospace;
+    color: var(--success-color);
+    font-size: 12px;
+}
+
+/* ========== 响应式监控面板 ========== */
+@media (max-width: 1024px) {
+    .monitor-panels {
+        grid-template-columns: 1fr;
+    }
+    
+    .hot-item .method {
+        width: 120px;
+    }
+}
