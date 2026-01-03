@@ -10,10 +10,9 @@
 (function() {
     // AI生成的环境文件列表
     // 格式: { filename: '文件名', property: '补充的属性', platform: 'AI平台', timestamp: '生成时间' }
-    const generatedFiles = [
-        // 示例:
-        // { filename: 'navigator_webdriver.js', property: 'navigator.webdriver', platform: 'OpenAI', timestamp: '2026-01-02T10:00:00Z' }
-    ];
+    const generatedFiles = [// 示例:
+        // { filename: 'navigator_webdriver.js', property: 'navigator.webdriver', platform: 'OpenAI', timestamp: '2026-01-02T10:00:00Z' },
+        { filename: 'navigator_webdriver_1767420862412.js', property: 'navigator.webdriver', platform: 'AI', timestamp: '2026-01-03T06:14:22.413Z' }];
 
     // 导出生成记录
     window.__aiGeneratedEnv__ = {

@@ -67,11 +67,20 @@ class BrowserEnvCollector:
     def navigate(self, url):
         """导航到指定URL"""
         self.page.get(url)
+    
+    def _run_js(self, script):
+        """安全执行JS并返回结果"""
+        try:
+            result = self.page.run_js(script)
+            return result
+        except Exception as e:
+            print(f"JS执行错误: {e}")
+            return None
         
     def collect_navigator(self):
         """采集 navigator 对象"""
         script = """
-        (function() {
+        return (function() {
             const nav = {};
             const props = [
                 'userAgent', 'appCodeName', 'appName', 'appVersion',
@@ -124,12 +133,12 @@ class BrowserEnvCollector:
             return nav;
         })()
         """
-        return self.page.run_js(script)
+        return self._run_js(script) or {}
         
     def collect_screen(self):
         """采集 screen 对象"""
         script = """
-        (function() {
+        return (function() {
             return {
                 width: screen.width,
                 height: screen.height,
@@ -146,12 +155,12 @@ class BrowserEnvCollector:
             };
         })()
         """
-        return self.page.run_js(script)
+        return self._run_js(script) or {}
         
     def collect_window(self):
         """采集 window 对象"""
         script = """
-        (function() {
+        return (function() {
             return {
                 innerWidth: window.innerWidth,
                 innerHeight: window.innerHeight,
@@ -169,12 +178,12 @@ class BrowserEnvCollector:
             };
         })()
         """
-        return self.page.run_js(script)
+        return self._run_js(script) or {}
         
     def collect_document(self):
         """采集 document 对象"""
         script = """
-        (function() {
+        return (function() {
             return {
                 title: document.title,
                 domain: document.domain,
@@ -195,12 +204,12 @@ class BrowserEnvCollector:
             };
         })()
         """
-        return self.page.run_js(script)
+        return self._run_js(script) or {}
         
     def collect_location(self):
         """采集 location 对象"""
         script = """
-        (function() {
+        return (function() {
             return {
                 href: location.href,
                 protocol: location.protocol,
@@ -214,12 +223,12 @@ class BrowserEnvCollector:
             };
         })()
         """
-        return self.page.run_js(script)
+        return self._run_js(script) or {}
         
     def collect_performance(self):
         """采集 performance 对象"""
         script = """
-        (function() {
+        return (function() {
             const timing = performance.timing;
             return {
                 timeOrigin: performance.timeOrigin,
@@ -238,12 +247,12 @@ class BrowserEnvCollector:
             };
         })()
         """
-        return self.page.run_js(script)
+        return self._run_js(script) or {}
         
     def collect_plugins(self):
         """采集 plugins 信息"""
         script = """
-        (function() {
+        return (function() {
             const plugins = [];
             for (let i = 0; i < navigator.plugins.length; i++) {
                 const plugin = navigator.plugins[i];
@@ -256,12 +265,12 @@ class BrowserEnvCollector:
             return plugins;
         })()
         """
-        return self.page.run_js(script)
+        return self._run_js(script) or []
         
     def collect_webgl(self):
         """采集 WebGL 信息"""
         script = """
-        (function() {
+        return (function() {
             try {
                 const canvas = document.createElement('canvas');
                 const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
@@ -283,12 +292,12 @@ class BrowserEnvCollector:
             }
         })()
         """
-        return self.page.run_js(script)
+        return self._run_js(script)
         
     def collect_canvas_fingerprint(self):
         """采集 Canvas 指纹"""
         script = """
-        (function() {
+        return (function() {
             try {
                 const canvas = document.createElement('canvas');
                 canvas.width = 200;
@@ -310,12 +319,12 @@ class BrowserEnvCollector:
             }
         })()
         """
-        return self.page.run_js(script)
+        return self._run_js(script)
         
     def collect_audio_context(self):
         """采集 AudioContext 信息"""
         script = """
-        (function() {
+        return (function() {
             try {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
                 if (!AudioContext) return null;
@@ -332,7 +341,7 @@ class BrowserEnvCollector:
             }
         })()
         """
-        return self.page.run_js(script)
+        return self._run_js(script)
         
     def collect_all(self, url=None):
         """
@@ -349,13 +358,15 @@ class BrowserEnvCollector:
         try:
             if url:
                 self.navigate(url)
+                # 等待页面加载完成
+                self.page.wait.doc_loaded()
             else:
                 # 访问空白页
                 self.navigate('about:blank')
                 
             # 获取浏览器信息
-            browser_info = self.page.run_js("""
-            (function() {
+            browser_info = self._run_js("""
+            return (function() {
                 const ua = navigator.userAgent;
                 let browser = 'Unknown';
                 let version = '';
@@ -371,9 +382,13 @@ class BrowserEnvCollector:
                     version = ua.match(/Edge\\/(\\d+\\.\\d+)/)?.[1] || '';
                 }
                 
-                return { browser, version };
+                return { browser: browser, version: version };
             })()
             """)
+            
+            # 确保 browser_info 不为 None
+            if browser_info is None:
+                browser_info = {'browser': 'Unknown', 'version': ''}
             
             result = {
                 "browser": browser_info.get('browser', 'Unknown'),
@@ -498,9 +513,11 @@ def main():
         # 打印摘要
         print("\n=== 采集摘要 ===")
         print(f"浏览器: {data['browser']} {data['version']}")
-        print(f"UserAgent: {data['objects']['navigator'].get('userAgent', 'N/A')[:80]}...")
-        print(f"平台: {data['objects']['navigator'].get('platform', 'N/A')}")
-        print(f"屏幕: {data['objects']['screen'].get('width')}x{data['objects']['screen'].get('height')}")
+        nav = data.get('objects', {}).get('navigator', {})
+        screen = data.get('objects', {}).get('screen', {})
+        print(f"UserAgent: {nav.get('userAgent', 'N/A')[:80]}...")
+        print(f"平台: {nav.get('platform', 'N/A')}")
+        print(f"屏幕: {screen.get('width', 'N/A')}x{screen.get('height', 'N/A')}")
         print(f"Plugins: {len(data.get('plugins', []))} 个")
         print(f"WebGL: {'支持' if data.get('webgl') else '不支持'}")
         

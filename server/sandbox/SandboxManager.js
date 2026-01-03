@@ -84,6 +84,15 @@ export class SandboxManager {
         await jail.set('clearTimeout', new ivm.Callback((id) => {}));
         await jail.set('clearInterval', new ivm.Callback((id) => {}));
 
+        // 注入 atob 和 btoa (Base64 编解码)
+        await jail.set('atob', new ivm.Callback((str) => {
+            return Buffer.from(str, 'base64').toString('binary');
+        }));
+
+        await jail.set('btoa', new ivm.Callback((str) => {
+            return Buffer.from(str, 'binary').toString('base64');
+        }));
+
         // 注入环境初始化代码
         const initCode = `
             // 创建window对象

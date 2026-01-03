@@ -291,11 +291,17 @@
         return signal;
     };
 
-    // 挂载到window
+    // 挂载到window和global
     window.Headers = Headers;
     window.Request = Request;
     window.Response = Response;
     window.fetch = fetch;
     window.AbortController = AbortController;
     window.AbortSignal = AbortSignal;
+    global.Headers = Headers;
+    global.Request = Request;
+    global.Response = Response;
+    global.fetch = fetch;
+    global.AbortController = AbortController;
+    global.AbortSignal = AbortSignal;
 })();
